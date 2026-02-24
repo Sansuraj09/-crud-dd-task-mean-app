@@ -33,14 +33,13 @@ pipeline {
         }
 
         stage('Deploy to VM') {
-            steps {
-                // This 'dir' block tells Jenkins to run the commands inside the subfolder
-                dir('crud-dd-task-mean-app') {
-                    sh 'docker compose pull'
-                    sh 'docker compose up -d --remove-orphans'
-                    sh 'docker image prune -f' 
-                }
-            }
+    steps {
+        dir('crud-dd-task-mean-app') {
+            sh 'docker compose pull'
+            // Added 'down' to ensure a clean slate before starting up
+            sh 'docker compose down --remove-orphans'
+            sh 'docker compose up -d'
+            sh 'docker image prune -f' 
         }
     }
 }
