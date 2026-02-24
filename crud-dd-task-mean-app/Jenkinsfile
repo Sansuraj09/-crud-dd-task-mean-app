@@ -19,12 +19,12 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', "${REGISTRY_CREDS}") {
-                        // Build and Push Backend
+                
                         def backend = docker.build("${BACKEND_IMAGE}:${env.BUILD_ID}", "crud-dd-task-mean-app/backend")
                         backend.push()
                         backend.push("latest")
 
-                        // Build and Push Frontend
+                    
                         def frontend = docker.build("${FRONTEND_IMAGE}:${env.BUILD_ID}", "crud-dd-task-mean-app/frontend")
                         frontend.push()
                         frontend.push("latest")
@@ -43,5 +43,4 @@ pipeline {
                 }
             }
         }
-    }
-} // <--- This final bracket closes the whole pipeline
+} 
