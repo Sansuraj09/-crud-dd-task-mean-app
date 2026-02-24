@@ -1,0 +1,33 @@
+#version: "3.8"
+services:
+  backend:
+    build: ./backend
+    image: yourdockerhubusername/mean-backend:latest
+    restart: unless-stopped
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/meanapp
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    volumes:
+      - backend_logs:/usr/src/app/logs
+
+  frontend:
+    build: ./frontend
+    image: yourdockerhubusername/mean-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+
+  mongo:
+    image: mongo:6.0
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=meanapp
+
+volumes:
+  mongo_data:
+  backend_logs:
