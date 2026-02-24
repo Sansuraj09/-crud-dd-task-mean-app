@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_USER = 'suraj960'
+        FRONTEND_IMAGE = "suraj960/frontend"
+        BACKEND_IMAGE  = "suraj960/backend"
+        REGISTRY_CREDS = 'docker-hub-creds'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build & Push Images') {
+            steps {
+                script {
+                    docker.withRegistry('', "${REGISTRY_CREDS}") {
+                        
+                        def backend = docker.build("${BACKEND_IMAGE}:${env.BUILD_ID}")
+                        backend.push()
+                        backend.push("latest")
+
+                      
+                        def frontend = docker.build("${FRONTEND_IMAGE}:${env.BUILD_ID}")
+                        frontend.push()
+                        frontend.push("latest")
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to VM') {
+            steps {
+                
+                sh 'docker compose pull'
+                sh 'docker compose up -d --remove-orphans'
+                sh 'docker image prune -f' 
+            }
+        }
+    }
+}
