@@ -2,7 +2,7 @@
 services:
   backend:
     build: ./backend
-    image: yourdockerhubusername/mean-backend:latest
+    image: suraj960/backend
     restart: unless-stopped
     environment:
       - MONGO_URI=mongodb://mongo:27017/meanapp
@@ -15,7 +15,7 @@ services:
 
   frontend:
     build: ./frontend
-    image: yourdockerhubusername/mean-frontend:latest
+    image: suraj960/frontend 
     restart: unless-stopped
     ports:
       - "80:80"
