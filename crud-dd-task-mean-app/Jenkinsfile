@@ -19,13 +19,12 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', "${REGISTRY_CREDS}") {
-                        
-                        def backend = docker.build("${BACKEND_IMAGE}:${env.BUILD_ID}")
+                        // We point to the specific subfolders for the build context
+                        def backend = docker.build("${BACKEND_IMAGE}:${env.BUILD_ID}", "crud-dd-task-mean-app/backend")
                         backend.push()
                         backend.push("latest")
 
-                      
-                        def frontend = docker.build("${FRONTEND_IMAGE}:${env.BUILD_ID}")
+                        def frontend = docker.build("${FRONTEND_IMAGE}:${env.BUILD_ID}", "crud-dd-task-mean-app/frontend")
                         frontend.push()
                         frontend.push("latest")
                     }
@@ -35,10 +34,12 @@ pipeline {
 
         stage('Deploy to VM') {
             steps {
-                
-                sh 'docker compose pull'
-                sh 'docker compose up -d --remove-orphans'
-                sh 'docker image prune -f' 
+                // This 'dir' block tells Jenkins to run the commands inside the subfolder
+                dir('crud-dd-task-mean-app') {
+                    sh 'docker compose pull'
+                    sh 'docker compose up -d --remove-orphans'
+                    sh 'docker image prune -f' 
+                }
             }
         }
     }
